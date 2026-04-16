@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Your Career Roadmap</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body class="quiz-body">
+    <div class="roadmap-container">
+      <h1>Your Career Roadmap</h1>
+      <h2>{{ career }}</h2>
+      <p class="roadmap-confidence">Confidence Score: {{ (confidence_score * 100)|round(2) }}%</p>
+      <p class="roadmap-confidence">Marks: {{ marks if marks is not none else "N/A" }} | Education: {{ education }}</p>
+
+      <section class="roadmap-section">
+        <h3>Top Career Options</h3>
+        <ul>
+          {% for option in top_careers %}
+            <li><strong>{{ option.name }}</strong> - {{ (option.score * 100)|round(2) }}%</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="roadmap-section">
+        <h3>Skills to Learn</h3>
+        <ul>
+          {% for item in skills %}
+            <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="roadmap-section">
+        <h3>Certifications</h3>
+        <ul>
+          {% for cert in certifications %}
+            <li>{{ cert }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="roadmap-section">
+        <h3>Courses</h3>
+        <ul>
+          {% for course in courses %}
+            <li>{{ course }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="roadmap-section">
+        <h3>Internships & Opportunities</h3>
+        <ul>
+          {% for item in internships %}
+            <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="roadmap-section">
+        <h3>Expected Salary Packages</h3>
+        <ul>
+          {% for item in packages %}
+            <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="roadmap-section">
+        <h3>Step-by-Step Roadmap</h3>
+        <ul>
+          {% for step in roadmap %}
+            <li>{{ step }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <div class="roadmap-links">
+        <a href="/chat">Chat with Mentor</a>
+        <a href="/dashboard">View Dashboard</a>
+        <a href="/quiz?reset=1">Retake Quiz</a>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Career Guidance System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <nav>
+      <div class="brand">Career Guidance</div>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/profile">Profile</a>
+        <a href="/quiz?reset=1">Quiz</a>
+        <a href="/chat">Career Chat</a>
+        <a href="/dashboard">Dashboard</a>
+        {% if current_user %}
+          <a class="profile-avatar" href="/profile" title="Open profile">{{ (current_user or 'U')[:1]|upper }}</a>
+          <a href="/logout">Logout</a>
+        {% else %}
+          <a href="/login">Login</a>
+          <a href="/register">Register</a>
+        {% endif %}
+      </div>
+    </nav>
+
+    <div class="page-wrapper">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash-message {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <section class="hero hero-advanced">
+        <div class="hero-copy">
+          <span class="eyebrow">AI-powered student career advisor</span>
+          <h1>Discover the best career path for your skills and interests.</h1>
+          <p>Predict future opportunities, explore government job guidance, and get internship recommendations in a modern, smart career dashboard.</p>
+          <p><a class="start-btn" href="/quiz?reset=1">Start Assessment Quiz</a></p>
+          <div class="stat-grid">
+            <div class="stat-card">
+              <strong>150+</strong>
+              <span>Career paths</span>
+            </div>
+            <div class="stat-card">
+              <strong>95%</strong>
+              <span>Student satisfaction</span>
+            </div>
+            <div class="stat-card">
+              <strong>4.8/5</strong>
+              <span>AI guidance quality</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-panel card">
+          <div class="panel-header">
+            <div>
+              <p class="panel-label">Career Profile Builder</p>
+              <h2>Complete your profile</h2>
+            </div>
+            <span class="badge">Fast & Responsive</span>
+          </div>
+          <div class="feature-list">
+            <div class="feature-item">Predict the strongest career match</div>
+            <div class="feature-item">Get internship and government job suggestions</div>
+            <div class="feature-item">Receive a custom AI study plan</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="assessment-form" class="card form-panel">
+        <div class="form-header">
+          <div>
+            <p class="panel-label">Step 1</p>
+            <h2>Create your profile</h2>
+          </div>
+          <span class="badge badge-secondary">New Flow</span>
+        </div>
+        <p>Use the Profile page to add your full details like name, gender, background, interests, marks, education, and skills.</p>
+        <p>Your saved details and career records are visible from the profile icon and dashboard history.</p>
+        <a class="start-btn" href="/profile">Go to Profile Page</a>
+      </section>
+
+      <section class="feature-section">
+        <h2 class="section-title">Why students choose this platform</h2>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h3>Smart predictions</h3>
+            <p>AI-backed career matching based on your unique interests, skills, and academics.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Internship guidance</h3>
+            <p>Find the right internship path that aligns with your future ambition.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Government job support</h3>
+            <p>Tailored advice for SSC, UPSC, banking, railways and other government opportunities.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </body>
+</html>

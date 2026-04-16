@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UpNext Quiz</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body class="quiz-body">
+    <div class="quiz-container">
+      <h1>UpNext Quiz</h1>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash-message {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <p class="quiz-subtitle">Answer these questions to find your ideal career</p>
+      <div class="progress-wrap">
+        <div class="progress-text">Question {{ current_index }} of {{ total_questions }}</div>
+        <div class="progress-track"><div class="progress-fill" style="width: {{ progress }}%"></div></div>
+      </div>
+      <h2 class="quiz-question">{{ question.text }}</h2>
+      <form method="post" action="/quiz/answer" class="quiz-actions">
+        <input type="hidden" name="question_id" value="{{ question.id }}">
+        <button type="submit" name="answer" value="yes" class="quiz-btn">Yes</button>
+        <button type="submit" name="answer" value="no" class="quiz-btn">No</button>
+      </form>
+    </div>
+  </body>
+</html>

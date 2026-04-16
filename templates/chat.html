@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Career Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <nav>
+      <div class="brand">Career Guidance</div>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/profile">Profile</a>
+        <a href="/quiz?reset=1">Quiz</a>
+        <a href="/chat">Career Chat</a>
+        <a href="/dashboard">Dashboard</a>
+        {% if current_user %}
+          <a class="profile-avatar" href="/profile" title="Open profile">{{ (current_user or 'U')[:1]|upper }}</a>
+          <a href="/logout">Logout</a>
+        {% else %}
+          <a href="/login">Login</a>
+          <a href="/register">Register</a>
+        {% endif %}
+      </div>
+    </nav>
+    <div class="page-wrapper">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash-message {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <section class="hero hero-compact">
+        <div class="hero-copy">
+          <span class="eyebrow">Career conversation</span>
+          <h1>Ask the career advisor</h1>
+          <p>Talk to the chatbot about your academic interests, future job options, internships, or exam preparation.</p>
+        </div>
+        <div class="hero-panel chat-status card">
+          <p class="panel-label">Assistant status</p>
+          {% if use_llm %}
+            <div class="status-pill status-active">Advanced AI active</div>
+          {% else %}
+            <div class="status-pill status-warning">Fallback assistant active</div>
+          {% endif %}
+          <p class="status-note">Only student career and education questions are supported.</p>
+        </div>
+      </section>
+
+      <section class="card form-panel">
+        <h2>Career Chatbot</h2>
+        <form method="post" action="/chat">
+          <label for="question">Type your question</label>
+          <textarea id="question" name="question" placeholder="What should I study if I like coding?">{{ question }}</textarea>
+          <button class="primary-btn" type="submit">Send</button>
+        </form>
+
+        {% if answer is not none %}
+          <div class="chat-result">
+            <div class="bubble user-bubble">You asked: {{ question }}</div>
+            <div class="bubble assistant-bubble">
+              <strong>Career advisor:</strong>
+              <p>{{ answer }}</p>
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="link-row">
+          <a href="/">Back to Home</a>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

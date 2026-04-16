@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Profile | Career Guidance</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <nav>
+      <div class="brand">Career Guidance</div>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/profile">Profile</a>
+        <a href="/quiz?reset=1">Quiz</a>
+        <a href="/chat">Career Chat</a>
+        <a href="/dashboard">Dashboard</a>
+        <a class="profile-avatar" href="/profile" title="Open profile">{{ (current_user or 'U')[:1]|upper }}</a>
+        <a href="/logout">Logout</a>
+      </div>
+    </nav>
+
+    <div class="page-wrapper">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash-message {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <section class="card form-panel">
+        <div class="form-header">
+          <div>
+            <p class="panel-label">User profile</p>
+            <h2>Your Profile Details</h2>
+          </div>
+          <span class="badge badge-secondary">Personalized</span>
+        </div>
+
+        <form method="post" action="/profile">
+          <div class="form-grid-two">
+            <div>
+              <label for="full_name">Full Name</label>
+              <input id="full_name" name="full_name" value="{{ profile.get('full_name', '') }}" required>
+            </div>
+            <div>
+              <label for="age">Age</label>
+              <input id="age" name="age" type="number" min="10" max="80" value="{{ profile.get('age', '') }}">
+            </div>
+          </div>
+
+          <div class="form-grid-two">
+            <div>
+              <label for="gender">Gender</label>
+              <select id="gender" name="gender" required>
+                <option value="">Select gender</option>
+                <option value="Male" {% if profile.get('gender') == 'Male' %}selected{% endif %}>Male</option>
+                <option value="Female" {% if profile.get('gender') == 'Female' %}selected{% endif %}>Female</option>
+                <option value="Other" {% if profile.get('gender') == 'Other' %}selected{% endif %}>Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="background">Background</label>
+              <input id="background" name="background" value="{{ profile.get('background', '') }}" placeholder="e.g. Science student from state board" required>
+            </div>
+          </div>
+
+          <div class="form-grid-two">
+            <div>
+              <label for="marks">Marks (0-100)</label>
+              <input id="marks" name="marks" type="number" min="0" max="100" step="0.1" value="{{ profile.get('marks', '') }}" required>
+            </div>
+            <div>
+              <label for="education">Education Level</label>
+              <select id="education" name="education" required>
+                <option value="">Select education</option>
+                <option value="10th" {% if profile.get('education') == '10th' %}selected{% endif %}>10th</option>
+                <option value="12th" {% if profile.get('education') == '12th' %}selected{% endif %}>12th</option>
+                <option value="degree" {% if profile.get('education') == 'degree' %}selected{% endif %}>Degree</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="interest">Primary Interest</label>
+          <select id="interest" name="interest" required>
+            <option value="">Select interest</option>
+            <option value="coding" {% if profile.get('interest') == 'coding' %}selected{% endif %}>Coding</option>
+            <option value="music" {% if profile.get('interest') == 'music' %}selected{% endif %}>Music</option>
+            <option value="sports" {% if profile.get('interest') == 'sports' %}selected{% endif %}>Sports</option>
+            <option value="dance" {% if profile.get('interest') == 'dance' %}selected{% endif %}>Dance</option>
+            <option value="business" {% if profile.get('interest') == 'business' %}selected{% endif %}>Business</option>
+            <option value="design" {% if profile.get('interest') == 'design' %}selected{% endif %}>Design</option>
+            <option value="science" {% if profile.get('interest') == 'science' %}selected{% endif %}>Science</option>
+          </select>
+
+          <div class="form-grid-two">
+            <div>
+              <label for="skill">Primary Skill</label>
+              <input id="skill" name="skill" value="{{ profile.get('skill', '') }}" placeholder="e.g. communication, coding" required>
+            </div>
+            <div>
+              <label for="talent">Talent Level</label>
+              <select id="talent" name="talent" required>
+                <option value="">Select talent</option>
+                <option value="low" {% if profile.get('talent') == 'low' %}selected{% endif %}>Low</option>
+                <option value="medium" {% if profile.get('talent') == 'medium' %}selected{% endif %}>Medium</option>
+                <option value="high" {% if profile.get('talent') == 'high' %}selected{% endif %}>High</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="career_goal">Career Goal (optional)</label>
+          <textarea id="career_goal" name="career_goal" placeholder="e.g. I want to become a data scientist">{{ profile.get('career_goal', '') }}</textarea>
+
+          <button class="primary-btn" type="submit">Save Profile</button>
+        </form>
+      </section>
+
+      {% if history %}
+      <section class="card result-card">
+        <h2>Your Records</h2>
+        <div class="history-grid">
+          {% for item in history %}
+            <div class="history-card">
+              <h3>{{ item.predicted_career }}</h3>
+              <p><strong>Confidence:</strong> {{ (item.confidence_score * 100)|round(2) }}%</p>
+              <p><strong>Marks:</strong> {{ item.marks if item.marks is not none else "N/A" }}</p>
+              <p><strong>Education:</strong> {{ item.education }}</p>
+              <p><strong>Interest:</strong> {{ item.interest }}</p>
+              <p><strong>Skill:</strong> {{ item.skill }}</p>
+              <p class="small-text">{{ item.created_at }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% else %}
+      <section class="card result-card">
+        <h2>Your Records</h2>
+        <p>No records yet. Take quiz or prediction to create one.</p>
+      </section>
+      {% endif %}
+    </div>
+  </body>
+</html>

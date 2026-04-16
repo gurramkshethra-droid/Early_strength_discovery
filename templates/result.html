@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Career Guidance Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <nav>
+      <div class="brand">Career Guidance</div>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/profile">Profile</a>
+        <a href="/quiz?reset=1">Quiz</a>
+        <a href="/chat">Career Chat</a>
+        <a href="/dashboard">Dashboard</a>
+        {% if current_user %}
+          <a class="profile-avatar" href="/profile" title="Open profile">{{ (current_user or 'U')[:1]|upper }}</a>
+          <a href="/logout">Logout</a>
+        {% else %}
+          <a href="/login">Login</a>
+          <a href="/register">Register</a>
+        {% endif %}
+      </div>
+    </nav>
+
+    <div class="page-wrapper">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash-message {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <section class="hero hero-advanced">
+        <div class="hero-copy">
+          <span class="eyebrow">Result summary</span>
+          <h1>Your next career move is ready.</h1>
+          <p>Review your predicted career path, probability insights, internship recommendations, and strategic study tips tailored to your profile.</p>
+        </div>
+        <div class="hero-panel summary-card card">
+          <h2>Top recommendation</h2>
+          <p class="highlight">{{ career }}</p>
+          <p class="small-text">Category: {{ career_category }}</p>
+          <p class="small-text">Confidence: {{ (confidence_score * 100)|round(2) }}%</p>
+          <div class="badge-list">
+            <span class="badge badge-secondary">Education: {{ education }}</span>
+            <span class="badge badge-secondary">Interest: {{ interest }}</span>
+            <span class="badge badge-secondary">Skill: {{ skill }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="result-grid">
+        <div class="card result-card chart-grid">
+          <div class="chart-panel">
+            <h2>Career Probability</h2>
+            <canvas id="careerBarChart"></canvas>
+          </div>
+          <div class="chart-panel">
+            <h2>Career Share</h2>
+            <canvas id="careerPieChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card result-card stats-card">
+          <h2>Your Academic Profile</h2>
+          <div class="profile-list">
+            <div><strong>Marks</strong><span>{{ marks }}</span></div>
+            <div><strong>Stream</strong><span>{{ stream }}</span></div>
+            <div><strong>Talent</strong><span>{{ talent }}</span></div>
+          </div>
+        </div>
+
+        <div class="card result-card">
+          <h2>Top 3 Career Suggestions</h2>
+          <ul>
+            {% for option in top_careers %}
+              <li><strong>{{ option.name }}</strong> - {{ (option.score * 100)|round(2) }}%</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="card result-card">
+          <h2>Government Job Matches</h2>
+          {% if govt_jobs %}
+            <ul>
+              {% for job in govt_jobs %}
+                <li>
+                  <strong>{{ job.name }}</strong>
+                  <p>{{ job.eligibility }}</p>
+                  <p class="small-text">{{ job.description }}</p>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p>No government job recommendations available for this education level.</p>
+          {% endif %}
+        </div>
+
+        <div class="card result-card">
+          <h2>Internship Recommendations</h2>
+          {% if internships %}
+            <ul>
+              {% for internship in internships %}
+                <li>{{ internship }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p>No internship recommendations available for this profile.</p>
+          {% endif %}
+        </div>
+
+        <div class="card result-card">
+          <h2>Course Recommendations</h2>
+          <ul>
+            {% for course in courses %}
+              <li>{{ course }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="card result-card">
+          <h2>Skills to Learn</h2>
+          <ul>
+            {% for item in skill_paths %}
+              <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="card result-card">
+          <h2>Certifications</h2>
+          <ul>
+            {% for cert in certifications %}
+              <li>{{ cert }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="card result-card">
+          <h2>Expected Salary Packages</h2>
+          <ul>
+            {% for pkg in packages %}
+              <li>{{ pkg }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="card result-card">
+          <h2>Career Roadmap</h2>
+          <ul>
+            {% for step in roadmap %}
+              <li>{{ step }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="card result-card">
+          <h2>Skill Improvement</h2>
+          <div class="info-box">
+            {% if skill|lower == 'coding' %}
+              <p>Practice coding challenges, learn data structures, and build small projects to strengthen your software skills.</p>
+            {% elif skill|lower == 'music' %}
+              <p>Practice regularly, learn new instruments or vocal techniques, and perform in front of audiences.</p>
+            {% elif skill|lower == 'sports' %}
+              <p>Follow a consistent training routine, improve your fitness, and focus on teamwork and discipline.</p>
+            {% elif skill|lower == 'communication' %}
+              <p>Work on public speaking, presentations, and active listening to become a stronger communicator.</p>
+            {% elif skill|lower == 'creativity' %}
+              <p>Explore new creative outlets, collaborate with others, and experiment with different ideas and media.</p>
+            {% elif skill|lower == 'dance' %}
+              <p>Build flexibility, rhythm, and choreography skills to grow as a dancer.</p>
+            {% else %}
+              <p>Keep building your strengths, learn from experts in your area, and stay curious about new opportunities.</p>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if ai_plan %}
+        <div class="card result-card">
+          <h2>AI Career Plan</h2>
+          <div class="info-box">
+            <p>{{ ai_plan|replace('\n', '<br>')|safe }}</p>
+          </div>
+        </div>
+        {% endif %}
+      </section>
+
+      <a class="back-link" href="/dashboard">View Dashboard History</a>
+      <br>
+      <a class="back-link" href="/">← Back to Home</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const labels = {{ career_labels|tojson }};
+      const data = {{ career_probs|tojson }};
+      const barCtx = document.getElementById('careerBarChart').getContext('2d');
+      const pieCtx = document.getElementById('careerPieChart').getContext('2d');
+
+      const palette = [
+        '#4f6ef7', '#52b1ff', '#f78e2e', '#39b09e', '#7a5cdf',
+        '#f65a8b', '#f2c94c', '#3aa76d', '#6b7280', '#ff8f4b'
+      ];
+
+      new Chart(barCtx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Career Probability',
+            data: data,
+            backgroundColor: labels.map((_, index) => palette[index % palette.length]),
+            borderColor: labels.map((_, index) => palette[index % palette.length]),
+            borderWidth: 1,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 1,
+              ticks: {
+                callback: value => `${value * 100}%`,
+              },
+              grid: {
+                color: 'rgba(79, 114, 204, 0.12)',
+              },
+            },
+            x: {
+              ticks: {
+                color: '#3c4a6e',
+              },
+              grid: {
+                display: false,
+              },
+            },
+          },
+          plugins: {
+            legend: {
+              display: false,
+            },
+            tooltip: {
+              callbacks: {
+                label: context => `Probability: ${(context.parsed.y * 100).toFixed(1)}%`,
+              },
+            },
+          },
+        },
+      });
+
+      new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Career Share',
+            data: data,
+            backgroundColor: labels.map((_, index) => palette[index % palette.length]),
+            borderColor: '#ffffff',
+            borderWidth: 2,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#3c4a6e',
+              },
+            },
+            tooltip: {
+              callbacks: {
+                label: context => `${context.label}: ${(context.parsed * 100).toFixed(1)}%`,
+              },
+            },
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

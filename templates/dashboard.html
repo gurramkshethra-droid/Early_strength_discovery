@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard | Career Guidance</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <nav>
+      <div class="brand">Career Guidance</div>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/profile">Profile</a>
+        <a href="/quiz?reset=1">Quiz</a>
+        <a href="/chat">Career Chat</a>
+        <a href="/dashboard">Dashboard</a>
+        <a class="profile-avatar" href="/profile" title="Open profile">{{ (current_user or 'U')[:1]|upper }}</a>
+        <a href="/logout">Logout</a>
+      </div>
+    </nav>
+
+    <div class="page-wrapper">
+      <section class="card form-panel">
+        <div class="form-header">
+          <div>
+            <p class="panel-label">User analytics</p>
+            <h2>Assessment History</h2>
+          </div>
+          <span class="badge badge-secondary">Saved Results</span>
+        </div>
+
+        {% if history %}
+          <div class="history-grid">
+            {% for item in history %}
+              <div class="history-card">
+                <h3>{{ item.predicted_career }}</h3>
+                <p><strong>Confidence:</strong> {{ (item.confidence_score * 100)|round(2) }}%</p>
+                <p><strong>Marks:</strong> {{ item.marks if item.marks is not none else "N/A (quiz)" }}</p>
+                <p><strong>Interest:</strong> {{ item.interest }}</p>
+                <p><strong>Skill:</strong> {{ item.skill }}</p>
+                <p><strong>Education:</strong> {{ item.education }}</p>
+                <p class="small-text">{{ item.created_at }}</p>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>No assessment history yet. Start your first assessment.</p>
+        {% endif %}
+
+        <div class="link-row">
+          <a href="/profile">Open Profile</a>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
